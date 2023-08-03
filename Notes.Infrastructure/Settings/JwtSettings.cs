@@ -1,4 +1,4 @@
-namespace Notes.Application.Configurations;
+namespace Notes.Infrastructure.Settings;
 
 public class JwtSettings
 {

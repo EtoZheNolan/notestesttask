@@ -3,9 +3,9 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Notes.Application.Configurations;
 using Notes.Application.Interfaces.InfrastructureServices;
 using Notes.Domain.Enums;
+using Notes.Infrastructure.Settings;
 
 namespace Notes.Infrastructure.Services;
 

@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Notes.Api.Conventions;
 using Notes.Api.Extensions;
-using Notes.Application.Configurations;
+using Notes.Infrastructure.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 

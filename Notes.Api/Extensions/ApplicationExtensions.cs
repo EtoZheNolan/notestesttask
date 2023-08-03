@@ -3,7 +3,6 @@ using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Notes.Api.Mappings;
 using Notes.Api.Validators;
-using Notes.Application.Configurations;
 using Notes.Application.Interfaces.ApplicationServices;
 using Notes.Application.Interfaces.InfrastructureServices;
 using Notes.Application.Interfaces.Repositories;
@@ -12,6 +11,7 @@ using Notes.Infrastructure;
 using Notes.Infrastructure.Decorators;
 using Notes.Infrastructure.Repositories;
 using Notes.Infrastructure.Services;
+using Notes.Infrastructure.Settings;
 
 namespace Notes.Api.Extensions;
 
@@ -31,6 +31,7 @@ public static class ApplicationExtensions
 
         serviceCollection.AddScoped<INotesService, NotesService>();
         serviceCollection.AddScoped<INotesService, CachingNotesDecorator>();
+        serviceCollection.AddScoped<ICategoriesService, CategoriesService>();
         serviceCollection.AddScoped<IUserAuthService, UserAuthService>();
         serviceCollection.AddScoped<ITokenService, TokenService>();
         serviceCollection.AddScoped<IPasswordHasherService, BCryptHasherService>();
