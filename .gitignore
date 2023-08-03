@@ -1,0 +1,13 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.idea
+.vs/
+Buffer-*.json
+Notes.Api/Buffer.bookmark
+Notes.Api/.DS_Store
+Notes.sln.DotSettings.user
+*.bookmark
+.DS_Store
