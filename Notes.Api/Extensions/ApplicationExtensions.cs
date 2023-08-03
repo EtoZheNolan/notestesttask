@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Notes.Api.Mappings;
@@ -33,9 +34,14 @@ public static class ApplicationExtensions
         serviceCollection.AddScoped<INotesRepository, NotesRepository>();
         serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
 
+        serviceCollection.AddMemoryCache();
         serviceCollection.AddScoped<INotesService, NotesService>();
-        serviceCollection.AddScoped<INotesService, CachingNotesDecorator>();
+        serviceCollection.AddScoped<INotesService>(provider =>
+            new CachingNotesDecorator(provider.GetRequiredService<NotesService>(), provider.GetRequiredService<IMemoryCache>()));
+
         serviceCollection.AddScoped<ICategoriesService, CategoriesService>();
+        serviceCollection.AddScoped<IUsersService, UsersService>();
+        
         serviceCollection.AddScoped<IUserAuthService, UserAuthService>();
         serviceCollection.AddScoped<ITokenService, TokenService>();
         serviceCollection.AddScoped<IPasswordHasherService, BCryptHasherService>();
