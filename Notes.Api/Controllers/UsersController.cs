@@ -28,6 +28,8 @@ public class UsersController : ControllerBase
     [HttpPost("update-user-role")]
     public async Task<IActionResult> UpdateUserRole([FromBody] UpdateUserRoleRequestDto updateUserRoleRequestDto)
     {
-        throw new NotImplementedException();
+        var result = await _usersService.UpdateUserRoleAsync(updateUserRoleRequestDto);
+        
+        return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.ErrorMessage); 
     }
 }

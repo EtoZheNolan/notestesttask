@@ -1,4 +1,5 @@
 using AutoMapper;
+using Notes.Application.DTOs.Requests;
 using Notes.Application.DTOs.Responses;
 using Notes.Application.Interfaces.ApplicationServices;
 using Notes.Application.Interfaces.Repositories;
@@ -20,14 +21,25 @@ public class CategoriesService : ICategoriesService
 
     public async Task<Result<List<CategoryResponseDto>>> GetAllCategoriesAsync()
     {
-        var result = _mapper.Map<List<Category>, List<CategoryResponseDto>>(await _categoriesRepository.GetAllAsync());
-        return Result<List<CategoryResponseDto>>.Success(result);
+        var result = await _categoriesRepository.GetAllAsync();
+        
+        return Result<List<CategoryResponseDto>>.Success(_mapper.Map<List<Category>, List<CategoryResponseDto>>(result));
     }
-
 
     public async Task<Result<List<CategoryResponseDto>>> GetCategoriesByUsernameAsync(string username)
     {
-        var result = _mapper.Map<List<Category>, List<CategoryResponseDto>>(await _categoriesRepository.GetAllByUsernameAsync(username));
-        return Result<List<CategoryResponseDto>>.Success(result);
+        var result = await _categoriesRepository.GetAllByUsernameAsync(username);
+        
+        return Result<List<CategoryResponseDto>>.Success(_mapper.Map<List<Category>, List<CategoryResponseDto>>(result));
+    }
+
+    public async Task<Result<bool>> CreateAsync(CreateCategoryRequestDto createCategoryRequestDto)
+    {
+        var entity = _mapper.Map<CreateCategoryRequestDto, Category>(createCategoryRequestDto);
+
+        await _categoriesRepository.AddAsync(entity);
+        await _categoriesRepository.SaveChangesAsync();
+
+        return Result<bool>.Success(true);
     }
 }

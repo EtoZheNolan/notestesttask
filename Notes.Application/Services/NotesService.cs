@@ -1,4 +1,5 @@
 using AutoMapper;
+using Notes.Application.DTOs.Requests;
 using Notes.Application.DTOs.Responses;
 using Notes.Application.Interfaces.ApplicationServices;
 using Notes.Application.Interfaces.Repositories;
@@ -30,5 +31,15 @@ public class NotesService : INotesService
         var result = await _notesRepository.GetAllAsync(true);
 
         return Result<List<NoteResponseDto>>.Success(_mapper.Map<List<Note>, List<NoteResponseDto>>(result));
+    }
+
+    public async Task<Result<bool>> CreateAsync(CreateNoteRequestDto createNoteRequestDto)
+    {
+        var entity = _mapper.Map<CreateNoteRequestDto, Note>(createNoteRequestDto);
+
+        await _notesRepository.AddAsync(entity);
+        await _notesRepository.SaveChangesAsync();
+
+        return Result<bool>.Success(true);
     }
 }

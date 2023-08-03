@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Notes.Application.DTOs.Requests;
 using Notes.Application.Interfaces.ApplicationServices;
 using Notes.Domain.Enums;
 
@@ -17,8 +18,7 @@ public class CategoriesController : ControllerBase
     {
         _categoriesService = categoriesService;
     }
-
-
+    
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -30,5 +30,13 @@ public class CategoriesController : ControllerBase
             : await _categoriesService.GetCategoriesByUsernameAsync(username!);
 
         return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.ErrorMessage);
+    }
+    
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateCategoryRequestDto createNoteRequestDto)
+    {
+        var result = await _categoriesService.CreateAsync(createNoteRequestDto);
+
+        return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.Data);
     }
 }

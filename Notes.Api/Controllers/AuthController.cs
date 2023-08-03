@@ -24,8 +24,7 @@ public class AuthController : ControllerBase
             ? Ok(result.Data)
             : StatusCode((int)result.HttpStatusCode, result.ErrorMessage);
     }
-    
-    
+
     [HttpPost("signup")]
     public async Task<IActionResult> Signup([FromBody] SignupRequestDto signupRequestDto)
     {

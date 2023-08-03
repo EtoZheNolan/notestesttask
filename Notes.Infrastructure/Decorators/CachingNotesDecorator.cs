@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Memory;
+using Notes.Application.DTOs.Requests;
 using Notes.Application.DTOs.Responses;
 using Notes.Application.Interfaces.ApplicationServices;
 using Notes.Application.Results;
@@ -35,5 +36,10 @@ public class CachingNotesDecorator : INotesService
     public async Task<Result<List<NoteResponseDto>>> GetAllNotesAsync()
     {
         return await _notesService.GetAllNotesAsync();
+    }
+
+    public async Task<Result<bool>> CreateAsync(CreateNoteRequestDto createNoteRequestDto)
+    {
+        return await _notesService.CreateAsync(createNoteRequestDto);
     }
 }

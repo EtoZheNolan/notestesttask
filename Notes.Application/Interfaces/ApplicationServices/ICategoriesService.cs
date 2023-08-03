@@ -1,3 +1,4 @@
+using Notes.Application.DTOs.Requests;
 using Notes.Application.DTOs.Responses;
 using Notes.Application.Results;
 
@@ -8,4 +9,6 @@ public interface ICategoriesService
     Task<Result<List<CategoryResponseDto>>> GetAllCategoriesAsync();
     
     Task<Result<List<CategoryResponseDto>>> GetCategoriesByUsernameAsync(string username);
+    
+    Task<Result<bool>> CreateAsync(CreateCategoryRequestDto createNoteRequestDto);
 }

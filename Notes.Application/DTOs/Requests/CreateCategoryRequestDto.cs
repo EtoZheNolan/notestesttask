@@ -1,9 +1,7 @@
-namespace Notes.Application.DTOs.Responses;
+namespace Notes.Application.DTOs.Requests;
 
-public class CategoryResponseDto
+public class CreateCategoryRequestDto
 {
-    public Guid Id { get; init; }
-    
     public string Name { get; set; } = null!;
 
     public Guid? ParentCategoryId { get; init; }

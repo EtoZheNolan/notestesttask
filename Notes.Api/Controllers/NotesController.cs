@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Notes.Application.DTOs.Requests;
 using Notes.Application.Interfaces.ApplicationServices;
 using Notes.Domain.Enums;
 
@@ -17,7 +18,7 @@ public class NotesController : ControllerBase
     {
         _notesService = notesService;
     }
-    
+
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -27,6 +28,14 @@ public class NotesController : ControllerBase
         var result = role == UserRole.Admin.ToString()
             ? await _notesService.GetAllNotesAsync()
             : await _notesService.GetNotesByUsernameAsync(username!);
+
+        return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.Data);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateNoteRequestDto createNoteRequestDto)
+    {
+        var result = await _notesService.CreateAsync(createNoteRequestDto);
 
         return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.Data);
     }
