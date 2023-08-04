@@ -10,5 +10,5 @@ public interface ICategoriesService
     
     Task<Result<List<CategoryResponseDto>>> GetCategoriesByUsernameAsync(string username);
     
-    Task<Result<bool>> CreateAsync(CreateCategoryRequestDto createNoteRequestDto);
+    Task<Result<CreateCategoryResponseDto>> CreateAsync(CreateCategoryRequestDto createNoteRequestDto);
 }

@@ -6,9 +6,9 @@ namespace Notes.Application.Interfaces.ApplicationServices;
 
 public interface INotesService
 {
-    Task<Result<List<NoteResponseDto>>> GetNotesByUsernameAsync(string username);
+    Task<Result<List<NoteResponseDto>>> GetNotesByAuthorIdAsync(Guid authorId);
     
     Task<Result<List<NoteResponseDto>>> GetAllNotesAsync();
 
-    Task<Result<bool>> CreateAsync(CreateNoteRequestDto createNoteRequestDto);
+    Task<Result<CreateNoteResponseDto>> CreateAsync(CreateNoteRequestDto createNoteRequestDto);
 }

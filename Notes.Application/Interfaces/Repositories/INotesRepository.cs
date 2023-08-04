@@ -4,5 +4,5 @@ namespace Notes.Application.Interfaces.Repositories;
 
 public interface INotesRepository : IBaseRepository<Note>
 {
-    Task<List<Note>> GetNotesByUsernameAsync(string username, bool asNoTracking = false);
+    Task<List<Note>> GetNotesByUserIdAsync(Guid userId, bool asNoTracking = false);
 }

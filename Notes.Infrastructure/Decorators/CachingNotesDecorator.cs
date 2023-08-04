@@ -17,14 +17,14 @@ public class CachingNotesDecorator : INotesService
         _memoryCache = memoryCache;
     }
     
-    public async Task<Result<List<NoteResponseDto>>> GetNotesByUsernameAsync(string username)
+    public async Task<Result<List<NoteResponseDto>>> GetNotesByAuthorIdAsync(Guid userId)
     {
-        var cacheKey = $"UserNotes_{username}";
+        var cacheKey = $"UserNotes_{userId}";
 
         if (_memoryCache.TryGetValue(cacheKey, out List<NoteResponseDto>? notes))
             return Result<List<NoteResponseDto>>.Success(notes!);
 
-        var result = await _notesService.GetNotesByUsernameAsync(username);
+        var result = await _notesService.GetNotesByAuthorIdAsync(userId);
 
         if (result.Data is null || !result.Data.Any())
             return result;
@@ -38,8 +38,10 @@ public class CachingNotesDecorator : INotesService
         return await _notesService.GetAllNotesAsync();
     }
 
-    public async Task<Result<bool>> CreateAsync(CreateNoteRequestDto createNoteRequestDto)
+    public async Task<Result<CreateNoteResponseDto>> CreateAsync(CreateNoteRequestDto createNoteRequestDto)
     {
+        _memoryCache.Remove($"UserNotes_{createNoteRequestDto.AuthorId}");
+        
         return await _notesService.CreateAsync(createNoteRequestDto);
     }
 }

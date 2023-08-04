@@ -13,11 +13,10 @@ public class NotesRepository : BaseRepository<Note>, INotesRepository
         _dataContext = dataContext;
     }
 
-    public async Task<List<Note>> GetNotesByUsernameAsync(string username, bool asNoTracking)
+    public async Task<List<Note>> GetNotesByUserIdAsync(Guid userId, bool asNoTracking = false)
     {
         var set = asNoTracking ? _dataContext.Notes.AsNoTracking() : _dataContext.Notes;
         
-        return await set.Include(x => x.Author)
-            .Where(x => x.Author.Username == username).ToListAsync();
+        return await set.Where(x => x.AuthorId == userId).ToListAsync();
     }
 }
