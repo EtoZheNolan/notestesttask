@@ -4,5 +4,5 @@ namespace Notes.Application.Interfaces.InfrastructureServices;
 
 public interface ITokenService
 {
-    string GenerateToken(string username, UserRole role);
+    string GenerateToken(Guid id, string username, UserRole role);
 }

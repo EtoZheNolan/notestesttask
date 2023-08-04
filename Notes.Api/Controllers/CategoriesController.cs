@@ -33,10 +33,15 @@ public class CategoriesController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> Create(CreateCategoryRequestDto createNoteRequestDto)
+    public async Task<IActionResult> Create([FromBody] CreateCategoryRequestDto createNoteRequestDto)
     {
+        var idInClaims = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value;
+
+        if (Guid.Parse(idInClaims) != createNoteRequestDto.AuthorId)
+            return Forbid();
+        
         var result = await _categoriesService.CreateAsync(createNoteRequestDto);
 
-        return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.Data);
+        return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.ErrorMessage);
     }
 }

@@ -32,9 +32,9 @@ public class UserAuthService : IUserAuthService
 
         if (user is null || !_passwordHasherService.VerifyPassword(loginRequestDto.Password, user.PasswordHash))
             return Result<LoginResponseDto>.Failure(HttpStatusCode.BadRequest, "Invalid username or password");
-        
+
         return Result<LoginResponseDto>.Success(new LoginResponseDto
-            { Token = _tokenService.GenerateToken(user.Username, user.Role) });
+            { Token = _tokenService.GenerateToken(user.Id, user.Username, user.Role) });
     }
 
     public async Task<Result<SignupResponseDto>> Signup(SignupRequestDto signupRequestDto)
@@ -48,11 +48,10 @@ public class UserAuthService : IUserAuthService
 
         newUser.PasswordHash = _passwordHasherService.HashPassword(signupRequestDto.Password);
 
-        var token = _tokenService.GenerateToken(newUser.Username, newUser.Role);
-
         await _usersRepository.AddAsync(newUser);
         await _usersRepository.SaveChangesAsync();
 
-        return Result<SignupResponseDto>.Success(new SignupResponseDto { Token = token });
+        return Result<SignupResponseDto>.Success(new SignupResponseDto
+            { Token = _tokenService.GenerateToken(newUser.Id, newUser.Username, newUser.Role) });
     }
 }

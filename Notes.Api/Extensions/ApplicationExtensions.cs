@@ -27,7 +27,7 @@ public static class ApplicationExtensions
         serviceCollection.AddFluentValidationAutoValidation()
             .AddFluentValidationClientsideAdapters()
             .AddValidatorsFromAssemblyContaining<LoginRequestValidator>();
-        
+
         serviceCollection.AddAutoMapper(typeof(MappingProfile));
 
         serviceCollection.AddScoped<ICategoriesRepository, CategoriesRepository>();
@@ -35,13 +35,13 @@ public static class ApplicationExtensions
         serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
 
         serviceCollection.AddMemoryCache();
+        
         serviceCollection.AddScoped<INotesService, NotesService>();
-        serviceCollection.AddScoped<INotesService>(provider =>
-            new CachingNotesDecorator(provider.GetRequiredService<NotesService>(), provider.GetRequiredService<IMemoryCache>()));
-
+        serviceCollection.Decorate<INotesService, CachingNotesDecorator>();
+        
         serviceCollection.AddScoped<ICategoriesService, CategoriesService>();
         serviceCollection.AddScoped<IUsersService, UsersService>();
-        
+
         serviceCollection.AddScoped<IUserAuthService, UserAuthService>();
         serviceCollection.AddScoped<ITokenService, TokenService>();
         serviceCollection.AddScoped<IPasswordHasherService, BCryptHasherService>();
@@ -61,7 +61,7 @@ public static class ApplicationExtensions
     public static void ConfigureAuthentication(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         var jwtSettings = configuration.GetSection(nameof(JwtSettings)).Get<JwtSettings>();
-        
+
         serviceCollection.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -95,7 +95,7 @@ public static class ApplicationExtensions
                 Scheme = "Bearer",
                 BearerFormat = "JWT"
             });
-    
+
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
             {
                 {

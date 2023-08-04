@@ -13,7 +13,7 @@ public class MappingProfile : Profile
         CreateMap<CreateNoteRequestDto, Note>();
 
         CreateMap<Category, CategoryResponseDto>();
-        CreateMap<CreateNoteRequestDto, Category>();
+        CreateMap<CreateCategoryRequestDto, Category>();
 
         CreateMap<User, UserResponseDto>();
         

@@ -18,7 +18,7 @@ public class TokenService : ITokenService
         _jwtSettings = jwtOptions.Value;
     }
     
-    public string GenerateToken(string username, UserRole role)
+    public string GenerateToken(Guid id, string username, UserRole role)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SecretKey));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -26,6 +26,7 @@ public class TokenService : ITokenService
         var claims = new[]
         {
             new Claim(ClaimTypes.Name, username),
+            new Claim(ClaimTypes.NameIdentifier, id.ToString()),
             new Claim(ClaimTypes.Role, role.ToString())
         };
 
