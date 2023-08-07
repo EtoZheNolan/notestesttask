@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Notes.Application.DTOs.Requests;
 using Notes.Application.Interfaces.ApplicationServices;
+using Notes.Application.Interfaces.InfrastructureServices;
 using Notes.Domain.Enums;
 
 namespace Notes.Api.Controllers;
@@ -13,21 +14,20 @@ namespace Notes.Api.Controllers;
 public class CategoriesController : ControllerBase
 {
     private readonly ICategoriesService _categoriesService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public CategoriesController(ICategoriesService categoriesService)
+    public CategoriesController(ICategoriesService categoriesService, ICurrentUserService currentUserService)
     {
         _categoriesService = categoriesService;
+        _currentUserService = currentUserService;
     }
     
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var username = HttpContext.User.Identity!.Name;
-        var role = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)!.Value;
-
-        var result = role == UserRole.Admin.ToString()
+        var result = _currentUserService.UserRole == UserRole.Admin
             ? await _categoriesService.GetAllCategoriesAsync()
-            : await _categoriesService.GetCategoriesByUsernameAsync(username!);
+            : await _categoriesService.GetCategoriesByUsernameAsync(_currentUserService.Username!);
 
         return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.ErrorMessage);
     }
@@ -35,9 +35,7 @@ public class CategoriesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] CreateCategoryRequestDto createNoteRequestDto)
     {
-        var idInClaims = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value;
-
-        if (Guid.Parse(idInClaims) != createNoteRequestDto.AuthorId)
+        if (_currentUserService.UserId != createNoteRequestDto.AuthorId)
             return Forbid();
         
         var result = await _categoriesService.CreateAsync(createNoteRequestDto);

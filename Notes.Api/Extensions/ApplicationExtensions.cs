@@ -3,7 +3,6 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Notes.Api.Mappings;
@@ -30,6 +29,8 @@ public static class ApplicationExtensions
 
         serviceCollection.AddAutoMapper(typeof(MappingProfile));
 
+        serviceCollection.AddHttpContextAccessor();
+
         serviceCollection.AddScoped<ICategoriesRepository, CategoriesRepository>();
         serviceCollection.AddScoped<INotesRepository, NotesRepository>();
         serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
@@ -45,6 +46,7 @@ public static class ApplicationExtensions
         serviceCollection.AddScoped<IUserAuthService, UserAuthService>();
         serviceCollection.AddScoped<ITokenService, TokenService>();
         serviceCollection.AddScoped<IPasswordHasherService, BCryptHasherService>();
+        serviceCollection.AddScoped<ICurrentUserService, CurrentUserService>();
     }
 
     public static void AddSettings(this IServiceCollection serviceCollection, IConfiguration configuration)
