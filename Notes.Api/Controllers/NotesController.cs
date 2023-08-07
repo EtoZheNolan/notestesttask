@@ -1,8 +1,8 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Notes.Application.DTOs.Requests;
 using Notes.Application.Interfaces.ApplicationServices;
+using Notes.Application.Interfaces.InfrastructureServices;
 using Notes.Domain.Enums;
 
 namespace Notes.Api.Controllers;
@@ -13,21 +13,20 @@ namespace Notes.Api.Controllers;
 public class NotesController : ControllerBase
 {
     private readonly INotesService _notesService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public NotesController(INotesService notesService)
+    public NotesController(INotesService notesService, ICurrentUserService currentUserService)
     {
         _notesService = notesService;
+        _currentUserService = currentUserService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var idInClaims = Guid.Parse(HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value);
-        var role = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Role)!.Value;
-
-        var result = role == UserRole.Admin.ToString()
+        var result = _currentUserService.UserRole == UserRole.Admin
             ? await _notesService.GetAllNotesAsync()
-            : await _notesService.GetNotesByAuthorIdAsync(idInClaims!);
+            : await _notesService.GetNotesByAuthorIdAsync(_currentUserService.UserId!.Value);
 
         return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.ErrorMessage);
     }
@@ -35,9 +34,7 @@ public class NotesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create(CreateNoteRequestDto createNoteRequestDto)
     {
-        var idInClaims = HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)!.Value;
-
-        if (Guid.Parse(idInClaims) != createNoteRequestDto.AuthorId)
+        if (_currentUserService.UserId != createNoteRequestDto.AuthorId)
             return Forbid();
         
         var result = await _notesService.CreateAsync(createNoteRequestDto);
