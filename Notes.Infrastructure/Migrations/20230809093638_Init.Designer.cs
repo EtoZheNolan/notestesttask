@@ -12,15 +12,15 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Notes.Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230803124400_init")]
-    partial class init
+    [Migration("20230809093638_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
+                .HasAnnotation("ProductVersion", "7.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -66,7 +66,7 @@ namespace Notes.Infrastructure.Migrations
                     b.HasIndex("ParentCategoryId")
                         .HasDatabaseName("ix_categories_parent_category_id");
 
-                    b.ToTable("categories");
+                    b.ToTable("categories", (string)null);
                 });
 
             modelBuilder.Entity("Notes.Domain.Entities.Note", b =>
@@ -115,7 +115,7 @@ namespace Notes.Infrastructure.Migrations
                     b.HasIndex("CategoryId")
                         .HasDatabaseName("ix_notes_category_id");
 
-                    b.ToTable("notes");
+                    b.ToTable("notes", (string)null);
                 });
 
             modelBuilder.Entity("Notes.Domain.Entities.User", b =>
@@ -165,7 +165,7 @@ namespace Notes.Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("pk_users");
 
-                    b.ToTable("users");
+                    b.ToTable("users", (string)null);
                 });
 
             modelBuilder.Entity("Notes.Domain.Entities.Category", b =>

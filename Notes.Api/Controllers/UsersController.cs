@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Notes.Api.Extensions;
 using Notes.Application.DTOs.Requests;
 using Notes.Application.Interfaces.ApplicationServices;
 
 namespace Notes.Api.Controllers;
 
 [ApiController]
+[Route("[controller]")]
 [Authorize(Roles = "Admin")]
-[Route("[controller]/[action]/")]
 public class UsersController : ControllerBase
 {
     private readonly IUsersService _usersService;
@@ -22,7 +23,7 @@ public class UsersController : ControllerBase
     {
         var result = await _usersService.GetAllUsers();
 
-        return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.ErrorMessage);
+        return result.ToActionResult();
     }
 
     [HttpPost("update-user-role")]
@@ -30,6 +31,6 @@ public class UsersController : ControllerBase
     {
         var result = await _usersService.UpdateUserRoleAsync(updateUserRoleRequestDto);
         
-        return result.IsSuccess ? Ok(result.Data) : StatusCode((int)result.HttpStatusCode, result.ErrorMessage); 
+        return result.ToActionResult(); 
     }
 }

@@ -2,26 +2,20 @@ using System.Text;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Notes.Api.Mappings;
 using Notes.Api.Validators;
-using Notes.Application.Interfaces.ApplicationServices;
-using Notes.Application.Interfaces.InfrastructureServices;
-using Notes.Application.Interfaces.Repositories;
-using Notes.Application.Services;
-using Notes.Infrastructure;
-using Notes.Infrastructure.Decorators;
-using Notes.Infrastructure.Repositories;
-using Notes.Infrastructure.Services;
+using Notes.Application.Enums;
+using Notes.Application.Settings;
 using Notes.Infrastructure.Settings;
 
 namespace Notes.Api.Extensions;
 
-public static class ApplicationExtensions
+public static class ServicesExtensions
 {
-    public static void AddServices(this IServiceCollection serviceCollection)
+    public static void AddServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddFluentValidationAutoValidation()
             .AddFluentValidationClientsideAdapters()
@@ -31,33 +25,29 @@ public static class ApplicationExtensions
 
         serviceCollection.AddHttpContextAccessor();
 
-        serviceCollection.AddScoped<ICategoriesRepository, CategoriesRepository>();
-        serviceCollection.AddScoped<INotesRepository, NotesRepository>();
-        serviceCollection.AddScoped<IUsersRepository, UsersRepository>();
+        var cacheSettings = configuration.GetSection(nameof(CacheSettings)).Get<CacheSettings>();
 
-        serviceCollection.AddMemoryCache();
-        
-        serviceCollection.AddScoped<INotesService, NotesService>();
-        serviceCollection.Decorate<INotesService, CachingNotesDecorator>();
-        
-        serviceCollection.AddScoped<ICategoriesService, CategoriesService>();
-        serviceCollection.AddScoped<IUsersService, UsersService>();
-
-        serviceCollection.AddScoped<IUserAuthService, UserAuthService>();
-        serviceCollection.AddScoped<ITokenService, TokenService>();
-        serviceCollection.AddScoped<IPasswordHasherService, BCryptHasherService>();
-        serviceCollection.AddScoped<ICurrentUserService, CurrentUserService>();
+        switch (cacheSettings!.CacheType)
+        {
+            case CacheType.Memory:
+                serviceCollection.AddMemoryCache();
+                break;
+            case CacheType.Redis:
+                serviceCollection.AddStackExchangeRedisCache(x =>
+                {
+                    x.Configuration = cacheSettings.RedisSettings.ConnectionString;
+                    x.InstanceName = cacheSettings.RedisSettings.InstanceName;
+                });
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     public static void AddSettings(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.Configure<JwtSettings>(configuration.GetSection(nameof(JwtSettings)));
-    }
-
-    public static void ConfigureDbContext(this IServiceCollection serviceCollection, IConfiguration configuration)
-    {
-        serviceCollection.AddDbContext<DataContext>(o =>
-            o.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+        serviceCollection.Configure<CacheSettings>(configuration.GetSection(nameof(CacheSettings)));
     }
 
     public static void ConfigureAuthentication(this IServiceCollection serviceCollection, IConfiguration configuration)
@@ -111,6 +101,14 @@ public static class ApplicationExtensions
                     },
                     Array.Empty<string>()
                 }
+            });
+            c.CustomOperationIds(apiDesc =>
+            {
+                var controllerAction = apiDesc.ActionDescriptor as ControllerActionDescriptor;
+                var controllerDisplayName = controllerAction?.ControllerTypeInfo.Name;
+
+                var operationId = controllerDisplayName + "_" + controllerAction?.ActionName;
+                return operationId;
             });
         });
     }

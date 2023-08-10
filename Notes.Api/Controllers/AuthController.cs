@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Notes.Api.Extensions;
 using Notes.Application.DTOs.Requests;
 using Notes.Application.Interfaces.ApplicationServices;
 
 namespace Notes.Api.Controllers;
 
 [ApiController]
-[Route("[controller]/[action]/")]
+[Route("[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IUserAuthService _userAuthService;
@@ -20,9 +21,7 @@ public class AuthController : ControllerBase
     {
         var result = await _userAuthService.Login(loginRequestDto);
 
-        return result.IsSuccess
-            ? Ok(result.Data)
-            : StatusCode((int)result.HttpStatusCode, result.ErrorMessage);
+        return result.ToActionResult();
     }
 
     [HttpPost("signup")]
@@ -30,8 +29,6 @@ public class AuthController : ControllerBase
     {
         var result = await _userAuthService.Signup(signupRequestDto);
 
-        return result.IsSuccess
-            ? Ok(result.Data)
-            : StatusCode((int)result.HttpStatusCode, result.ErrorMessage);
+        return result.ToActionResult();
     }
 }

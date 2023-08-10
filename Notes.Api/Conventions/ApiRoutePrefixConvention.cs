@@ -14,7 +14,12 @@ public class ApiRoutePrefixConvention : IApplicationModelConvention
     public void Apply(ApplicationModel application)
     {
         foreach (var controller in application.Controllers)
-            controller.Selectors[0].AttributeRouteModel = new AttributeRouteModel
-                { Template = $"{_routePrefix}/{controller.ControllerName.ToLower()}" };
+        {
+            controller.ControllerName = controller.ControllerName.ToLower();
+            
+            var selector = controller.Selectors[0];
+            selector.AttributeRouteModel!.Template = $"{_routePrefix}/{selector.AttributeRouteModel!.Template}";
+        }
+            
     }
 }

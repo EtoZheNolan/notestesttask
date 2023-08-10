@@ -29,16 +29,16 @@ public class CategoriesService : ICategoriesService
         return Result<List<CategoryResponseDto>>.Success(_mapper.Map<List<Category>, List<CategoryResponseDto>>(result));
     }
 
-    public async Task<Result<List<CategoryResponseDto>>> GetCategoriesByUsernameAsync(string username)
+    public async Task<Result<List<CategoryResponseDto>>> GetCategoriesByUserIdAsync(Guid userId)
     {
-        var result = await _categoriesRepository.GetAllByUsernameAsync(username);
+        var result = await _categoriesRepository.GetAllByUserIdAsync(userId);
         
         return Result<List<CategoryResponseDto>>.Success(_mapper.Map<List<Category>, List<CategoryResponseDto>>(result));
     }
 
-    public async Task<Result<CreateCategoryResponseDto>> CreateAsync(CreateCategoryRequestDto createCategoryRequestDto)
+    public async Task<Result<CreateCategoryResponseDto>> CreateAsync(Guid userId, CreateCategoryRequestDto createCategoryRequestDto)
     {
-        var user = await _usersRepository.GetByIdAsync(createCategoryRequestDto.AuthorId);
+        var user = await _usersRepository.GetByIdAsync(userId);
 
         if (user is null)
             return Result<CreateCategoryResponseDto>.Failure(HttpStatusCode.NotFound, "User doesn't exist");

@@ -14,9 +14,17 @@ public class CurrentUserService : ICurrentUserService
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public Guid? UserId =>
-        Guid.Parse(_httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)
-            ?.Value ?? string.Empty);
+    public Guid? UserId
+    {
+        get
+        {
+            return Guid.TryParse(
+                _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)
+                    ?.Value, out var value)
+                ? value
+                : default(Guid?);
+        }
+    }
 
     public string? Username => _httpContextAccessor.HttpContext.User.Claims
         .FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;

@@ -1,12 +1,13 @@
-﻿using Humanizer;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Notes.Domain.Entities;
 
 namespace Notes.Infrastructure;
 
 public class DataContext : DbContext
 {
-    public DataContext(DbContextOptions options) : base(options) { }
+    public DataContext(DbContextOptions options) : base(options)
+    {
+    }
     
     public DbSet<Note> Notes { get; set; } = null!;
 
@@ -22,33 +23,18 @@ public class DataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        ApplySnakeCaseNamingConvention(modelBuilder);
-        
         modelBuilder.Entity<User>()
             .Property(u => u.Role)
             .HasConversion<string>();
-        
+
         base.OnModelCreating(modelBuilder);
     }
-
-    private void ApplySnakeCaseNamingConvention(ModelBuilder modelBuilder)
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        foreach (var entity in modelBuilder.Model.GetEntityTypes())
-        {
-            entity.SetTableName(entity.GetTableName().Underscore());
-            
-            foreach (var property in entity.GetProperties())
-                property.SetColumnName(property.GetColumnName().Underscore());
-            
-            foreach (var key in entity.GetKeys())
-                key.SetName(key.GetName().Underscore());
-            
-            foreach (var key in entity.GetForeignKeys())
-                key.SetConstraintName(key.GetConstraintName().Underscore());
-            
-            foreach (var index in entity.GetIndexes())
-                index.SetDatabaseName(index.GetDatabaseName().Underscore());
-        }
+        optionsBuilder.UseSnakeCaseNamingConvention();
+
+        base.OnConfiguring(optionsBuilder);
     }
 
     private void UpdateDates()

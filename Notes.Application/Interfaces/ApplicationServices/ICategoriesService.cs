@@ -8,7 +8,7 @@ public interface ICategoriesService
 {
     Task<Result<List<CategoryResponseDto>>> GetAllCategoriesAsync();
     
-    Task<Result<List<CategoryResponseDto>>> GetCategoriesByUsernameAsync(string username);
+    Task<Result<List<CategoryResponseDto>>> GetCategoriesByUserIdAsync(Guid userId);
     
-    Task<Result<CreateCategoryResponseDto>> CreateAsync(CreateCategoryRequestDto createNoteRequestDto);
+    Task<Result<CreateCategoryResponseDto>> CreateAsync(Guid userId, CreateCategoryRequestDto createNoteRequestDto);
 }
