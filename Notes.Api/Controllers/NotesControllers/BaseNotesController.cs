@@ -18,7 +18,7 @@ public abstract class BaseNotesController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateAsync(CreateNoteRequestDto createNoteRequestDto)
+    public async Task<IActionResult> CreateAsync([FromBody] CreateNoteRequestDto createNoteRequestDto)
     {
         var result = await NotesService.CreateAsync(CurrentUserService.UserId!.Value, createNoteRequestDto);
 

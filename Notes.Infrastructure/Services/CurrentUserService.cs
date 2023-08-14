@@ -26,9 +26,6 @@ public class CurrentUserService : ICurrentUserService
         }
     }
 
-    public string? Username => _httpContextAccessor.HttpContext.User.Claims
-        .FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
-
     public UserRole? UserRole
     {
         get

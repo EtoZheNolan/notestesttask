@@ -44,7 +44,8 @@ public class CategoriesService : ICategoriesService
             return Result<CreateCategoryResponseDto>.Failure(HttpStatusCode.NotFound, "User doesn't exist");
 
         var entity = _mapper.Map<CreateCategoryRequestDto, Category>(createCategoryRequestDto);
-
+        entity.AuthorId = userId;
+        
         await _categoriesRepository.AddAsync(entity);
         await _categoriesRepository.SaveChangesAsync();
 

@@ -52,6 +52,7 @@ public class NotesService : INotesService
             return Result<CreateNoteResponseDto>.Failure(HttpStatusCode.NotFound, "User doesn't exist");
         
         var entity = _mapper.Map<CreateNoteRequestDto, Note>(createNoteRequestDto);
+        entity.AuthorId = userId;
 
         await _notesRepository.AddAsync(entity);
         await _notesRepository.SaveChangesAsync();
